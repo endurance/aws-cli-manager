@@ -2,15 +2,17 @@ import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import { initHandlers } from "./handlers/ipc_handler";
 
 let win: BrowserWindow | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
-      nodeIntegration: true
+      contextIsolation: true,
+      preload: path.resolve(__dirname, 'preload', 'preload.js'),
     }
   })
   
@@ -56,3 +58,5 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+initHandlers();
