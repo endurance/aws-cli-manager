@@ -9,15 +9,16 @@ class Props {
   aws_access_key_id: string;
   aws_secret_access_key: string;
   region: string;
+  
+  onProfileSwitch: () => void = () => {};
 }
 
 class Behavior extends BaseBehavior<any> {
   confirmClick = async (profileName: string) => {
-    // @ts-ignore
-    const answer = window.confirm('Set as default?');
+    const answer = window.confirm(`Set ${profileName} as default?`);
     if (answer) {
       const manager: Manager = await window.electron.switchToProfile(profileName);
-      console.log(manager);
+      await this.props.onProfileSwitch();
     }
   }
 }

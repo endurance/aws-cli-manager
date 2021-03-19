@@ -5,14 +5,18 @@ import { Profile } from "aws-accounts/dist/classes/profile";
 import { SimpleAwsCredentialsCard } from "./components/SimpleAwsCredentialsCard";
 
 class ViewState {
-  creds: Profile[] = []
+  creds: Profile[] = [];
 }
 
-class Behavior extends BaseBehavior<ViewState>{
+class Behavior extends BaseBehavior<ViewState> {
   public grabCredentials = async () => {
     const creds: Profile[] = await window.electron.getCredentialsAsFile();
-    this.setter('creds', creds);
+    this.setter("creds", creds);
   };
+  
+  public waitThenGrabCredentials = () => {
+    setTimeout(this.grabCredentials, 1000);
+  }
 }
 
 const App = () => {
@@ -21,7 +25,7 @@ const App = () => {
   return (
     <div className="App">
       {behavior.viewState.creds.map(x => {
-        return <SimpleAwsCredentialsCard {...x}/>
+        return <SimpleAwsCredentialsCard {...x} onProfileSwitch={behavior.waitThenGrabCredentials} />;
       })}
     </div>
   );
