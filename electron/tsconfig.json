@@ -9,6 +9,13 @@
     "noEmitOnError": true,
     "typeRoots": [
       "node_modules/@types"
+    ],
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "esnext"
+      //      "es2015.promise"
     ]
   }
 }

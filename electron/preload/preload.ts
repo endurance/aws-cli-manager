@@ -11,7 +11,6 @@ export const preloadScript = () => {
         return await ipcRenderer.invoke('getCredentialsAsFile');
       },
       switchToProfile: async (profileName: string) => {
-        console.log(profileName);
         return await ipcRenderer.invoke('switchToProfile', profileName);
       }
     }
