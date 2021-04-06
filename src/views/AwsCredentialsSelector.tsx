@@ -3,7 +3,9 @@ import { useAsync } from "react-use";
 import { BaseBehavior, useBehavior } from "@enduranceidehen/behavior";
 import { Profile } from "aws-accounts/dist/classes/profile";
 import { plainToClass } from "class-transformer";
-import { SimpleAwsCredentialsCard } from "../components/SimpleAwsCredentialsCard";
+import { AwsCredentialsCard } from "../components/AwsCredentialsCard";
+import { ProfileOptions } from "aws-accounts/dist/constants";
+import { Grid } from "@material-ui/core";
 
 class ViewState {
   creds: Profile[] = [];
@@ -18,26 +20,42 @@ class Behavior extends BaseBehavior<ViewState> {
   
   public allCredentialsExceptDefault = () => {
     return this.viewState.creds.filter((x) => x.getName() !== "default");
+  };
+  
+  public defaultProfile = () => {
+    return this.viewState.creds.find((x) => x.getName() === "default");
+  };
+  
+  public isThisDefault = (profile: ProfileOptions & any) => {
+    const defProfile = this.defaultProfile() as unknown as ProfileOptions;
+    return defProfile.aws_access_key_id === profile.aws_access_key_id && defProfile.aws_secret_access_key === profile.aws_secret_access_key;
   }
   
-  public isDefault = (profile: Profile) => {
-    const defaultProfile = this.viewState.creds.find((x) => x.getName() === "default");
-    // @ts-ignore
-    return defaultProfile.aws_access_key_id === profile.aws_access_key_id &&
-      // @ts-ignore
-      defaultProfile.aws_secret_access_key === profile.aws_secret_access_key;
-  }
+  public cardItem = (profile: Profile) => {
+    const profileOptions = profile as unknown as ProfileOptions;
+    const {name, region} = profileOptions;
+    console.log(this.isThisDefault(profileOptions));
+    return (
+      <Grid item xs={4}>
+        <AwsCredentialsCard
+          key={name}
+          name={name}
+          region={region}
+          isDefault={this.isThisDefault(profileOptions)}
+          onProfileChange={this.grabCredentials}
+        />
+      </Grid>
+    );
+  };
 }
 
 export const AwsCredentialsSelector = () => {
   const behavior = useBehavior({}, Behavior, new ViewState());
   useAsync(behavior.grabCredentials);
   return (
-    <>
-      {behavior.allCredentialsExceptDefault().map(x => {
-        return <SimpleAwsCredentialsCard isDefault={behavior.isDefault(x)} {...x} onProfileSwitch={behavior.grabCredentials} />;
-      })}
-    </>
+    <Grid container spacing={2}>
+      {behavior.allCredentialsExceptDefault().map(behavior.cardItem)}
+    </Grid>
   );
 };
 

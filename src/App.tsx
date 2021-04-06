@@ -1,23 +1,23 @@
 import React from "react";
-import { Container, CssBaseline, Grid } from "@material-ui/core";
+import { Box, CssBaseline, ThemeProvider } from "@material-ui/core";
 import { AwsCredentialsSelector } from "./views/AwsCredentialsSelector";
-import { SideBar } from "./layout/SideBar";
+import { ModalContainer } from "@enduranceidehen/modal-manager";
+import { AddNewCredentialsButton } from "./components/AddNewCredentialsButton";
+import Dashboard from "./layout/Dashboard";
+import { theme } from "./layout/theme";
 
 const App = () => {
+  document.title = "AWS Credentials Manager";
   return (
-    <div className="App">
-      <CssBaseline />
-      <Grid container>
-        <Grid item>
-          <SideBar/>
-        </Grid>
-        <Grid item>
-          <Container maxWidth="lg">
-            <AwsCredentialsSelector/>
-          </Container>
-        </Grid>
-      </Grid>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      <ModalContainer/>
+      <Dashboard>
+        <AddNewCredentialsButton/>
+        <Box mb={4}/>
+        <AwsCredentialsSelector/>
+      </Dashboard>
+    </ThemeProvider>
   );
 };
 
